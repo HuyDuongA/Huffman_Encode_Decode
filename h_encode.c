@@ -28,5 +28,7 @@ int main(const int argc, const char *argv[]){
         }
     }
     while(byte_read);
+    close(fd_r);
+    close(fd_w);
     return 0;
 }
