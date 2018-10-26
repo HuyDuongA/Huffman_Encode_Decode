@@ -33,6 +33,5 @@ void print_htable(char **);
 void clean_tree(node *);
 void print_list(node *);                            //Helper function
 void print_tree(node *, int);                       //Helper function
-uint32_t *header_gen(char **);
 
 #endif

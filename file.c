@@ -6,6 +6,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include "htable_func.h"
+#define FOUR_BYTE 4
+#define ONE_BYTE 1
+#define ERR_CODE -1
 
 /* The first argument of open_file is 'r' or 'w', which stand for read or 
  * write option.
@@ -46,4 +51,20 @@ unsigned int open_file(int option, const char *file_name){
         }
     }
     return ret_fd;
+}
+
+void header_gen(const uint32_t *array, int fd_w){
+    const uint8_t SIZE = 255;
+    uint32_t c_count = 0;
+    for(int i = 0; i < ASCII_SIZE; ++i){
+        if(array[i])
+            c_count++;
+    }
+    write(fd_w, &c_count, FOUR_BYTE);
+    for(uint8_t i = 0; i <= SIZE; ++i){
+        if(array[i]){
+            write(fd_w, &i, ONE_BYTE);
+            write(fd_w, &array[i], FOUR_BYTE);
+        }
+    }
 }

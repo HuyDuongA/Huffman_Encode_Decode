@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include "htable_func.h"
 #define ONE_NODE 1
-#define FOUR_BYTE 4
 
 node *new_node(){
     node *new_node = calloc(ONE_NODE, sizeof(node));
@@ -27,9 +26,9 @@ node *new_node(){
 /* The function takes a character as index value and increase array[index]
  * in each encounter in the array. 
  * */
-void char_to_array(unsigned char c, int *array){
+void char_to_array(uint8_t index, int *array){
     assert(array);
-    array[(int)c]++; 
+    array[index]++; 
 }
 
 
@@ -315,12 +314,4 @@ void print_list(node *list){
     }   
 }
 
-uint32_t *header_gen(char **h_table){
-    uint32_t *r_header = NULL;
-    uint32_t count = 0;
-    char c = **h_table;
-    while(!c)
-        count++;
-    return r_header;
-}
 
