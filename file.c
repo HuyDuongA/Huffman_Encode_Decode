@@ -12,6 +12,7 @@
 #define ONE_BYTE 1
 #define ERR_CODE -1
 #define BUFF_LENGTH 2
+#define ONE_BYTE_BIT_NUM 8
 
 /* The first argument of open_file is 'r' or 'w', which stand for read or 
  * write option.
@@ -75,20 +76,25 @@ void header_gen(const uint32_t *array, int fd_w){
  * that code into buf_w. At the end, the function returns the number of 
  * byte written in buf_w.
  * */
-unsigned int buff_write_gen(uint8_t ch, char **h_table, uint8_t *buf_w){
+void buff_n_write(uint8_t ch, char **h_table, uint8_t *buf_w, int fd_w){
     static uint8_t mask = 128;
     static int bit_pos = 0;
-    static uint32_t ret_byte = 0;
+    static uint32_t byte_num = 0;
     char *h_code = h_table[ch];
     for(int i = 0; i < strlen(h_code); ++i){
-        if(h_code[i])
-            buf_w[i] |= mask;
+        if(h_code[i] == '1')
+            buf_w[byte_num] |= mask;
         mask >>= 1;
         bit_pos++;
-    }
-    if(!bit_pos%(sizeof(uint8_t)))
-        ret_byte++;
-    return ret_byte;
+        if(!mask)
+            mask = 128;
+        if(!(bit_pos%ONE_BYTE_BIT_NUM))
+            byte_num++;
+        if(bit_pos == BUFF_LENGTH){
+            write(fd_w, buf_w, BUFF_LENGTH);
+            reset_buff(buf_w, BUFF_LENGTH);
+        }
+   }
 }
 
 
@@ -109,18 +115,10 @@ void body_gen(char **h_table, int fd_w, int fd_r){
         for(unsigned int i = 0; i < byte_r; ++i){
             if(buf_r[i]){
                 ch = buf_r[i];
-                byte_w = buff_write_gen(ch, h_table, buf_w);
-                if(byte_w){
-                    if(byte_w == BUFF_LENGTH){
-                        write(fd_w, buf_w, BUFF_LENGTH);
-                        reset_buff(buf_w, BUFF_LENGTH);
-                    }
-                }
+                buff_n_write(ch, h_table, buf_w, fd_w);
             }
         }
     }
-    if(byte_w)
-        write(fd_w, buf_w, byte_w);
 }
 
 void get_c_to_arr(int fd_r, int *array){
