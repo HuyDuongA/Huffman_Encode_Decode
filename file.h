@@ -1,8 +1,9 @@
 #ifndef FILE_H
 #define FILE_H
-int open_file(int , const char *);
+int open_file(int, const char *);
 void header_gen(const uint32_t *, int);
+void get_c_to_arr(int, int *);
 void body_gen(char **, int, int);
-void get_c_to_arr(int , int *);
-
+unsigned int buff_write_gen(uint8_t , char **, uint8_t *); 
+void reset_buff(uint8_t *, int);
 #endif
